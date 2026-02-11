@@ -1,0 +1,185 @@
+{
+  "tasks": [
+    {
+      "id": "1770745280673",
+      "title": "Test Kanban",
+      "description": "First task",
+      "assignee": "mira",
+      "status": "In Progress",
+      "created_by": "assi",
+      "created_at": "2026-02-10T17:41:20.673Z",
+      "updated_at": "2026-02-10T18:33:01.897Z"
+    },
+    {
+      "id": "1770745744690",
+      "title": "Deploy to prod",
+      "description": "Deploy the new release",
+      "assignee": "daniel",
+      "status": "Backlog",
+      "created_by": "assi",
+      "created_at": "2026-02-10T17:49:04.690Z",
+      "updated_at": "2026-02-10T17:49:04.690Z"
+    },
+    {
+      "id": "1770745809026",
+      "title": "Fix bug #123",
+      "description": "Memory leak in worker",
+      "assignee": "daniel",
+      "status": "Backlog",
+      "created_by": "assi",
+      "created_at": "2026-02-10T17:50:09.026Z",
+      "updated_at": "2026-02-10T17:50:09.026Z"
+    },
+    {
+      "id": "1770745833581",
+      "title": "Fix bug #124",
+      "description": "Memory leak in worker",
+      "assignee": "daniel",
+      "status": "Backlog",
+      "created_by": "assi",
+      "created_at": "2026-02-10T17:50:33.581Z",
+      "updated_at": "2026-02-10T17:50:33.581Z"
+    },
+    {
+      "id": "1770745866750",
+      "title": "Fix bug #125",
+      "description": "Memory leak test",
+      "assignee": "daniel",
+      "status": "Backlog",
+      "created_by": "system",
+      "created_at": "2026-02-10T17:51:06.750Z",
+      "updated_at": "2026-02-10T17:51:06.750Z"
+    },
+    {
+      "id": "1770745970260",
+      "title": "Fix bug #126",
+      "description": "Final test",
+      "assignee": "daniel",
+      "status": "Backlog",
+      "created_by": "system",
+      "created_at": "2026-02-10T17:52:50.260Z",
+      "updated_at": "2026-02-10T17:52:50.260Z"
+    },
+    {
+      "id": "1770746003604",
+      "title": "Run diagnostics",
+      "description": "",
+      "assignee": "daniel",
+      "status": "Backlog",
+      "created_by": "system",
+      "created_at": "2026-02-10T17:53:23.604Z",
+      "updated_at": "2026-02-10T17:53:23.604Z"
+    },
+    {
+      "id": "1770746083503",
+      "title": "System check",
+      "description": "",
+      "command": "echo \"System OK\" && date",
+      "assignee": "daniel",
+      "status": "Done",
+      "created_by": "system",
+      "created_at": "2026-02-10T17:54:43.504Z",
+      "updated_at": "2026-02-10T17:54:43.504Z",
+      "result": "System OK\nTue Feb 10 17:54:45 UTC 2026",
+      "completed_at": "2026-02-10T17:55:16.515Z"
+    },
+    {
+      "id": "1770747450334",
+      "title": "E2E 1770747450",
+      "description": "",
+      "command": "echo E2E 1770747450",
+      "assignee": "daniel",
+      "status": "Done",
+      "created_by": "system",
+      "created_at": "2026-02-10T18:17:30.334Z",
+      "updated_at": "2026-02-10T18:17:30.334Z",
+      "result": "ok",
+      "completed_at": "2026-02-10T18:17:42.484Z"
+    },
+    {
+      "id": "1770747478977",
+      "title": "E2E 1770747478",
+      "description": "",
+      "command": "echo E2E 1770747478",
+      "assignee": "daniel",
+      "status": "Done",
+      "created_by": "system",
+      "created_at": "2026-02-10T18:17:58.977Z",
+      "updated_at": "2026-02-10T18:17:58.977Z",
+      "result": "ok",
+      "completed_at": "2026-02-10T18:18:11.053Z"
+    },
+    {
+      "id": "1770747516092",
+      "title": "E2E 1770747516",
+      "description": "",
+      "command": "echo E2E 1770747516",
+      "assignee": "daniel",
+      "status": "Done",
+      "created_by": "system",
+      "created_at": "2026-02-10T18:18:36.092Z",
+      "updated_at": "2026-02-10T18:18:36.092Z",
+      "result": "ok",
+      "completed_at": "2026-02-10T18:18:43.561Z"
+    },
+    {
+      "id": "1770747571156",
+      "title": "E2E 1770747571",
+      "description": "",
+      "command": "echo E2E 1770747571",
+      "assignee": "daniel",
+      "status": "Done",
+      "created_by": "system",
+      "created_at": "2026-02-10T18:19:31.156Z",
+      "updated_at": "2026-02-10T18:19:31.156Z",
+      "result": "ok",
+      "completed_at": "2026-02-10T18:19:43.237Z"
+    },
+    {
+      "id": "1770747963269",
+      "title": "E2E 1770747963",
+      "description": "",
+      "command": "echo E2E 1770747963",
+      "assignee": "daniel",
+      "status": "Done",
+      "created_by": "system",
+      "created_at": "2026-02-10T18:26:03.269Z",
+      "updated_at": "2026-02-10T18:26:03.269Z",
+      "result": "ok",
+      "completed_at": "2026-02-10T18:26:15.527Z"
+    },
+    {
+      "id": "1770748113588",
+      "title": "DEMO: Create welcome message",
+      "description": "Create a welcome message for the system",
+      "assignee": "daniel",
+      "status": "Backlog",
+      "created_by": "assi",
+      "created_at": "2026-02-10T18:28:33.588Z",
+      "updated_at": "2026-02-10T18:28:33.588Z"
+    },
+    {
+      "id": "1770748146199",
+      "title": "DEMO: Create welcome message",
+      "description": "Create a welcome message",
+      "command": "echo Welcome to Org Observability! Agent Daniel reporting for duty.",
+      "assignee": "daniel",
+      "status": "Backlog",
+      "created_by": "system",
+      "created_at": "2026-02-10T18:29:06.199Z",
+      "updated_at": "2026-02-10T18:29:06.199Z"
+    },
+    {
+      "id": "1770748314567",
+      "title": "Demo task",
+      "description": "Test",
+      "command": "echo Demo completed successfully",
+      "assignee": "daniel",
+      "status": "Backlog",
+      "created_by": "system",
+      "created_at": "2026-02-10T18:31:54.567Z",
+      "updated_at": "2026-02-10T18:31:54.567Z"
+    }
+  ],
+  "agents": []
+}

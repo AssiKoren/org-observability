@@ -1,0 +1,20 @@
+{
+  "name": "org-observability",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./backend/index.js",
+    "dev": "concurrently \"node ./backend/index.js\" \"(cd frontend && npm run dev)\"",
+    "frontend-install": "(cd frontend && npm install)",
+    "backend-install": "(cd backend && npm install)"
+  },
+  "dependencies": {
+    "better-sqlite3": "^8.0.1",
+    "cors": "^2.8.6",
+    "express": "^4.22.1",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
