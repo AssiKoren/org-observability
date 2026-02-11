@@ -1283,146 +1283,302 @@
   "activities": {
     "system": [
       {
-        "timestamp": "2026-02-11T13:41:24.478Z",
-        "agent": "eros",
-        "action": "started",
-        "details": "Agent started and polling every 5 minutes"
-      },
-      {
-        "timestamp": "2026-02-11T13:41:24.558Z",
-        "agent": "eros",
-        "action": "check",
-        "details": "Checked tasks, found 2 active"
-      },
-      {
-        "timestamp": "2026-02-11T13:46:25.247Z",
-        "agent": "eros",
-        "action": "check",
-        "details": "Checked tasks, found 2 active"
-      },
-      {
-        "timestamp": "2026-02-11T13:51:25.787Z",
-        "agent": "eros",
-        "action": "check",
-        "details": "Checked tasks, found 2 active"
-      },
-      {
-        "timestamp": "2026-02-11T13:56:27.051Z",
-        "agent": "eros",
-        "action": "check",
-        "details": "Checked tasks, found 2 active"
-      },
-      {
-        "timestamp": "2026-02-11T14:01:27.332Z",
-        "agent": "eros",
-        "action": "check",
-        "details": "Checked tasks, found 2 active"
-      },
-      {
-        "timestamp": "2026-02-11T14:06:27.553Z",
-        "agent": "eros",
-        "action": "check",
-        "details": "Checked tasks, found 2 active"
-      },
-      {
-        "timestamp": "2026-02-11T14:11:27.772Z",
-        "agent": "eros",
-        "action": "check",
-        "details": "Checked tasks, found 2 active"
-      },
-      {
-        "timestamp": "2026-02-11T14:14:13.325Z",
-        "agent": "eros",
-        "action": "started",
-        "details": "Eros agent started"
-      },
-      {
-        "timestamp": "2026-02-11T14:16:17.307Z",
-        "agent": "eros",
-        "action": "started",
-        "details": "Eros agent started"
-      },
-      {
-        "timestamp": "2026-02-11T14:17:04.410Z",
-        "agent": "eros",
-        "action": "started",
-        "details": "Eros agent started"
-      },
-      {
-        "timestamp": "2026-02-11T14:18:55.340Z",
-        "agent": "eros",
-        "action": "started",
-        "details": "Eros agent started"
-      },
-      {
-        "timestamp": "2026-02-11T14:20:36.455Z",
-        "agent": "eros",
-        "action": "started",
-        "details": "Eros agent started"
-      },
-      {
-        "timestamp": "2026-02-11T14:22:01.652Z",
-        "agent": "eros",
-        "action": "started",
-        "details": "Eros agent started"
-      },
-      {
-        "timestamp": "2026-02-11T14:33:12.476Z",
-        "agent": "eros",
-        "action": "started",
-        "details": "Eros started"
-      },
-      {
-        "timestamp": "2026-02-11T17:10:07.236Z",
-        "agent": "daniel",
-        "action": "started",
-        "details": "Agent started and polling every 5 minutes"
-      },
-      {
-        "timestamp": "2026-02-11T17:10:07.359Z",
-        "agent": "lior",
-        "action": "started",
-        "details": "Agent started and polling every 5 minutes"
-      },
-      {
-        "timestamp": "2026-02-11T17:10:07.444Z",
-        "agent": "daniel",
-        "action": "check",
-        "details": "No active tasks found"
-      },
-      {
-        "timestamp": "2026-02-11T17:10:07.450Z",
-        "agent": "lior",
-        "action": "check",
-        "details": "No active tasks found"
-      },
-      {
-        "timestamp": "2026-02-11T17:10:07.616Z",
-        "agent": "rina",
-        "action": "started",
-        "details": "Agent started and polling every 5 minutes"
-      },
-      {
-        "timestamp": "2026-02-11T17:10:07.670Z",
+        "timestamp": "2026-02-11T19:05:15.111Z",
         "agent": "rina",
         "action": "check",
         "details": "No active tasks found"
       },
       {
-        "timestamp": "2026-02-11T17:15:07.501Z",
+        "timestamp": "2026-02-11T19:05:15.147Z",
         "agent": "daniel",
         "action": "check",
         "details": "No active tasks found"
       },
       {
-        "timestamp": "2026-02-11T17:15:07.505Z",
+        "timestamp": "2026-02-11T19:10:11.911Z",
         "agent": "lior",
         "action": "check",
         "details": "No active tasks found"
       },
       {
-        "timestamp": "2026-02-11T17:15:07.724Z",
+        "timestamp": "2026-02-11T19:10:15.166Z",
         "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:10:15.922Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:15:12.959Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:15:15.394Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:15:16.161Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:20:13.084Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:20:15.506Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:20:16.213Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:25:13.136Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:25:16.235Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:25:16.266Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:30:14.962Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:30:16.512Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:30:16.514Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:35:15.180Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:35:16.562Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:35:16.920Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:40:15.233Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:40:16.747Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:40:17.036Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:45:15.286Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:45:17.273Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:45:17.274Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:50:15.338Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:50:18.426Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:50:18.479Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:55:15.390Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:55:18.676Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T19:55:19.362Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:00:15.451Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:00:19.263Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:00:19.500Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:10:04.564Z",
+        "agent": "daniel",
+        "action": "started",
+        "details": "Agent started and polling every 5 minutes"
+      },
+      {
+        "timestamp": "2026-02-11T20:10:04.677Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:10:04.741Z",
+        "agent": "lior",
+        "action": "started",
+        "details": "Agent started and polling every 5 minutes"
+      },
+      {
+        "timestamp": "2026-02-11T20:10:04.794Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:10:04.935Z",
+        "agent": "rina",
+        "action": "started",
+        "details": "Agent started and polling every 5 minutes"
+      },
+      {
+        "timestamp": "2026-02-11T20:10:04.988Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:15:04.736Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:15:05.110Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:15:05.113Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:20:04.789Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:20:05.167Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:20:05.169Z",
+        "agent": "lior",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:25:06.280Z",
+        "agent": "rina",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:25:07.074Z",
+        "agent": "daniel",
+        "action": "check",
+        "details": "No active tasks found"
+      },
+      {
+        "timestamp": "2026-02-11T20:25:07.075Z",
+        "agent": "lior",
         "action": "check",
         "details": "No active tasks found"
       }
