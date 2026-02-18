@@ -10,6 +10,12 @@ const styles = {
   title: { margin: 0, color: '#2c3e50', fontSize: '24px' },
   controls: { display: 'flex', gap: '10px', alignItems: 'center' },
   addBtn: { padding: '10px 20px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '14px' },
+  dangerBtn: { padding: '10px 20px', backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '14px' },
+  secondaryBtn: { padding: '10px 20px', backgroundColor: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '14px' },
+  metricsRow: { display: 'grid', gridTemplateColumns: 'repeat(4, minmax(120px, 1fr))', gap: '10px', margin: '0 0 20px 0' },
+  metricCard: { backgroundColor: '#fff', borderRadius: '8px', padding: '12px 14px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' },
+  metricLabel: { fontSize: '12px', color: '#6c757d' },
+  metricValue: { fontSize: '24px', fontWeight: '700', color: '#2c3e50' },
   searchInput: { padding: '10px 15px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', width: '200px' },
   select: { padding: '10px 15px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', backgroundColor: '#fff' },
   board: { display: 'flex', gap: '12px', width: '100%', maxWidth: '100%', paddingBottom: '20px', paddingLeft: '20px', paddingRight: '20px', overflowX: 'auto', boxSizing: 'border-box' },
@@ -342,6 +348,8 @@ function KanbanBoard() {
   const [showAddTask, setShowAddTask] = useState(false);
   const [newTaskForm, setNewTaskForm] = useState({ description: '', dod: '' });
   const [creatingTask, setCreatingTask] = useState(false);
+  const [editingTask, setEditingTask] = useState(false);
+  const [editTaskForm, setEditTaskForm] = useState({ title: '', assignee: 'lior', status: 'Backlog' });
   const [searchQuery, setSearchQuery] = useState('');
   const [filterAssignee, setFilterAssignee] = useState('');
   const [filterCreator, setFilterCreator] = useState('');
@@ -391,6 +399,7 @@ function KanbanBoard() {
 
   const handleTaskClick = async (task) => {
     setSelectedTask(task);
+    setEditTaskForm({ title: task.title || '', assignee: task.assignee || 'lior', status: task.status || 'Backlog' });
     await getConversation(task.id);
     await getActivity(task.id);
     
@@ -446,6 +455,42 @@ function KanbanBoard() {
     setCreatingTask(false);
   };
 
+  const handleUpdateTask = async () => {
+    if (!selectedTask) return;
+    setEditingTask(true);
+    try {
+      await axios.patch(`${API_URL}/api/tasks/${selectedTask.id}`, {
+        title: editTaskForm.title,
+        assignee: editTaskForm.assignee,
+        status: editTaskForm.status,
+        updated_by: currentActor,
+      });
+      await fetchTasks();
+      const updated = (await axios.get(`${API_URL}/api/tasks/${selectedTask.id}`)).data;
+      setSelectedTask(updated);
+      alert('Task updated');
+    } catch (err) {
+      console.error('Error updating task:', err);
+      alert(err.response?.data?.error || 'Failed to update task');
+    }
+    setEditingTask(false);
+  };
+
+  const handleDeleteTask = async () => {
+    if (!selectedTask) return;
+    const ok = confirm(`Delete task \"${selectedTask.title}\"? This cannot be undone.`);
+    if (!ok) return;
+    try {
+      await axios.delete(`${API_URL}/api/tasks/${selectedTask.id}`);
+      setSelectedTask(null);
+      await fetchTasks();
+      alert('Task deleted');
+    } catch (err) {
+      console.error('Error deleting task:', err);
+      alert(err.response?.data?.error || 'Failed to delete task');
+    }
+  };
+
   const filterTasks = tasks.filter(t => {
     const matchesSearch = (t.title || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesAssignee = !filterAssignee || t.assignee === filterAssignee;
@@ -463,6 +508,13 @@ function KanbanBoard() {
   });
 
   const getUniqueValues = (key) => [...new Set(tasks.map(t => t[key]))].filter(Boolean);
+
+  const metrics = {
+    backlog: filterTasks.filter(t => ['Backlog', 'Not Started'].includes(t.status)).length,
+    inProgress: filterTasks.filter(t => ['Started', 'Ready for Review', 'Pending Review', 'Owner Review', 'Changes Requested'].includes(t.status)).length,
+    done: filterTasks.filter(t => t.status === 'Done').length,
+    total: filterTasks.length,
+  };
 
   const formatTime = (timestamp) => {
     if (!timestamp) return '';
@@ -511,6 +563,13 @@ function KanbanBoard() {
             <input type="date" style={styles.select} value={dateTo} onChange={e => setDateTo(e.target.value)} />
           </>
         )}
+      </div>
+
+      <div style={styles.metricsRow}>
+        <div style={styles.metricCard}><div style={styles.metricLabel}>Backlog</div><div style={styles.metricValue}>{metrics.backlog}</div></div>
+        <div style={styles.metricCard}><div style={styles.metricLabel}>In Progress</div><div style={styles.metricValue}>{metrics.inProgress}</div></div>
+        <div style={styles.metricCard}><div style={styles.metricLabel}>Done</div><div style={styles.metricValue}>{metrics.done}</div></div>
+        <div style={styles.metricCard}><div style={styles.metricLabel}>Total (filtered)</div><div style={styles.metricValue}>{metrics.total}</div></div>
       </div>
 
       <div style={styles.board}>
@@ -563,6 +622,32 @@ function KanbanBoard() {
                 )}
                 <div><strong>Created:</strong> {formatTime(selectedTask.created_at)}</div>
                 <div><strong>Task ID:</strong> {selectedTask.id}</div>
+              </div>
+
+              <div style={{ ...styles.section, backgroundColor: '#fff8e1', padding: '15px', borderRadius: '8px', border: '1px solid #ffe082' }}>
+                <div style={{ ...styles.sectionTitle, color: '#ff8f00' }}>🛠️ Task Controls</div>
+                <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: '2fr 1fr 1fr' }}>
+                  <input
+                    style={styles.input}
+                    value={editTaskForm.title}
+                    onChange={e => setEditTaskForm({ ...editTaskForm, title: e.target.value })}
+                    placeholder="Task title"
+                  />
+                  <select style={styles.select} value={editTaskForm.assignee} onChange={e => setEditTaskForm({ ...editTaskForm, assignee: e.target.value })}>
+                    {getUniqueValues('assignee').concat(['lior','manager','assi','daniel']).filter((v, i, a) => v && a.indexOf(v)===i).map(a => (
+                      <option key={a} value={a}>{a}</option>
+                    ))}
+                  </select>
+                  <select style={styles.select} value={editTaskForm.status} onChange={e => setEditTaskForm({ ...editTaskForm, status: e.target.value })}>
+                    {['Backlog','Not Started','Started','Ready for Review','Pending Review','Owner Review','Changes Requested','Done'].map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                  <button style={styles.secondaryBtn} disabled={editingTask} onClick={handleUpdateTask}>{editingTask ? 'Saving...' : '💾 Save Changes'}</button>
+                  <button style={styles.dangerBtn} onClick={handleDeleteTask}>🗑️ Delete Task</button>
+                </div>
               </div>
               
               {/* Definition of Done (DoD) Section */}
