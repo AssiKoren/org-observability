@@ -12,8 +12,8 @@ const styles = {
   addBtn: { padding: '10px 20px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '14px' },
   searchInput: { padding: '10px 15px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', width: '200px' },
   select: { padding: '10px 15px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', backgroundColor: '#fff' },
-  board: { display: 'flex', gap: '2%', width: '100%', maxWidth: '100%', paddingBottom: '20px', paddingLeft: '20px', paddingRight: '20px', overflowX: 'hidden', boxSizing: 'border-box' },
-  column: { width: '31%', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' },
+  board: { display: 'flex', gap: '12px', width: '100%', maxWidth: '100%', paddingBottom: '20px', paddingLeft: '20px', paddingRight: '20px', overflowX: 'auto', boxSizing: 'border-box' },
+  column: { minWidth: '260px', flex: 1, backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' },
   columnHeader: { padding: '15px', fontWeight: '600', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   columnHeaderBacklog: { backgroundColor: '#6c757d' },
   columnHeaderInProgress: { backgroundColor: '#007bff' },
@@ -61,13 +61,132 @@ const styles = {
 
 // Column definitions
 const COLUMNS = [
-  { id: 'Backlog', headerStyle: styles.columnHeaderBacklog },
-  { id: 'In Progress', headerStyle: styles.columnHeaderInProgress },
-  { id: 'Done', headerStyle: styles.columnHeaderDone },
+  { id: 'backlog', headerStyle: styles.columnHeaderBacklog, label: '⏳ Backlog', filterStatuses: ['Backlog', 'Not Started'] },
+  {
+    id: 'in-progress',
+    headerStyle: { ...styles.columnHeader, backgroundColor: '#007bff' },
+    label: '🚀 In Progress',
+    filterStatuses: ['Started', 'Ready for Review', 'Pending Review', 'Owner Review', 'Changes Requested']
+  },
+  { id: 'done', headerStyle: styles.columnHeaderDone, label: '✅ Done', filterStatuses: ['Done'] },
 ];
 
 // API configuration
 const API_URL = 'http://localhost:3001';
+
+// Workflow action buttons component
+function WorkflowActions({ task, onUpdate, onClose, currentActor, actorLabel }) {
+  const [loading, setLoading] = useState(false);
+  
+  const handleAction = async (action, data = {}) => {
+    setLoading(true);
+    try {
+      await axios.post(`${API_URL}/api/tasks/${task.id}/${action}`, data);
+      await onUpdate();
+      if (onClose) onClose(); // Close modal after successful action
+    } catch (err) {
+      alert(err.response?.data?.error || 'Action failed');
+    }
+    setLoading(false);
+  };
+  
+  const workflow = {
+    'Backlog': () => (
+      <button style={{...styles.sendBtn, backgroundColor: '#007bff'}} onClick={() => handleAction('take', { agent: task.assignee || 'assi' })}>
+        👉 Take Task
+      </button>
+    ),
+    'Not Started': () => (
+      <button style={{...styles.sendBtn, backgroundColor: '#007bff'}} onClick={() => handleAction('take', { agent: task.assignee || 'assi' })}>
+        🚀 Start Working
+      </button>
+    ),
+    'Started': () => (
+      <button style={{...styles.sendBtn, backgroundColor: '#6c757d'}} onClick={() => handleAction('ready-for-review', { agent: task.assignee, note: 'Work complete, ready for review' })}>
+        📋 Mark Ready for Review
+      </button>
+    ),
+    'Ready for Review': () => {
+      const isOwner = (currentActor || '').toLowerCase() === String(task.created_by || '').toLowerCase() ||
+        (['mr-a','assaf'].includes((currentActor || '').toLowerCase()) && ['mr-a','assaf'].includes(String(task.created_by || '').toLowerCase()));
+      if (!isOwner) {
+        return <div style={{ color: '#6c757d', fontSize: '13px' }}>⏳ Waiting for owner to request reviews</div>;
+      }
+      return (
+        <button style={{...styles.sendBtn, backgroundColor: '#28a745'}} onClick={() => handleAction('verify-and-request-review', { actor: currentActor || task.created_by, reviewers: ['manager', 'assi'], message: `${currentActor || task.created_by} requested level-1 review from manager and assi` })}>
+          ✅ {actorLabel ? actorLabel(task.created_by) : task.created_by}: Request Level-1 Reviews
+        </button>
+      );
+    },
+    'Pending Review': () => {
+      const reviewers = Array.isArray(task.reviewers) ? task.reviewers : ['manager', 'assi'];
+      const canReview = reviewers.includes(currentActor);
+      if (!canReview) {
+        return (
+          <div style={{ color: '#6c757d', fontSize: '13px' }}>
+            ⏳ Waiting for reviewers: {reviewers.join(', ')}
+          </div>
+        );
+      }
+      return (
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button style={{...styles.sendBtn, backgroundColor: '#28a745'}} onClick={() => handleAction('approve-review', { reviewer: currentActor, approved: true })}>
+            ✅ {actorLabel ? actorLabel(currentActor) : currentActor} Approve
+          </button>
+          <button style={{...styles.sendBtn, backgroundColor: '#dc3545'}} onClick={() => {
+            const feedback = prompt(`${actorLabel ? actorLabel(currentActor) : currentActor} rejection feedback (required):`);
+            if (feedback) handleAction('approve-review', { reviewer: currentActor, approved: false, feedback });
+          }}>
+            ❌ {actorLabel ? actorLabel(currentActor) : currentActor} Reject
+          </button>
+        </div>
+      );
+    },
+    'Owner Review': () => {
+      const isOwner = (currentActor || '').toLowerCase() === String(task.created_by || '').toLowerCase() ||
+        (['mr-a','assaf'].includes((currentActor || '').toLowerCase()) && ['mr-a','assaf'].includes(String(task.created_by || '').toLowerCase()));
+      if (!isOwner) {
+        return (
+          <div style={{ color: '#6c757d', fontSize: '13px' }}>
+            ⏳ Waiting for owner decision: {actorLabel ? actorLabel(task.created_by) : task.created_by}
+          </div>
+        );
+      }
+      return (
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button style={{...styles.sendBtn, backgroundColor: '#28a745'}} onClick={() => handleAction('final-approve', { approver: currentActor || task.created_by })}>
+            🎉 {actorLabel ? actorLabel(task.created_by) : 'Owner'} Final Approve (Done)
+          </button>
+          <button style={{...styles.sendBtn, backgroundColor: '#dc3545'}} onClick={() => {
+            const feedback = prompt('Owner rejection feedback (required):');
+            if (feedback) handleAction('final-reject', { approver: currentActor || task.created_by, feedback });
+          }}>
+            ❌ {actorLabel ? actorLabel(task.created_by) : 'Owner'} Request Changes
+          </button>
+        </div>
+      );
+    },
+    'Changes Requested': () => (
+      <button style={{...styles.sendBtn, backgroundColor: '#007bff'}} onClick={() => handleAction('take', { agent: task.assignee })}>
+        🔁 Resume Work
+      </button>
+    ),
+    'Done': () => (
+      <div style={{ color: '#28a745', fontWeight: 'bold', fontSize: '16px' }}>🎉 Task Completed!</div>
+    )
+  };
+  
+  if (loading) {
+    return <div style={{ color: '#666' }}>Processing...</div>;
+  }
+  
+  const ActionComponent = workflow[task.status];
+  if (!ActionComponent) {
+    return <div style={{ color: '#999' }}>Unknown status: {task.status}</div>;
+  }
+  
+  return <ActionComponent />;
+}
 
 // Navigation Component
 function Navigation() {
@@ -121,7 +240,7 @@ function OrgChartPage() {
   
   return (
     <div style={styles.pageContent}>
-      <h1 style={styles.pageTitle}>👥 Organization Chart</h1>
+      <h1 style={styles.pageTitle}>📋 No Manual</h1>
       
       <div style={styles.orgChart}>
         {/* Executive */}
@@ -206,6 +325,14 @@ function SettingsPage() {
 
 // Kanban Board Component
 function KanbanBoard() {
+  const ACTOR_OPTIONS = [
+    { id: 'mr-a', label: 'Assaf (Boss)' },
+    { id: 'assi', label: 'Assi' },
+    { id: 'manager', label: 'Manager' },
+    { id: 'lior', label: 'Lior' },
+  ];
+  const actorLabel = (id) => (ACTOR_OPTIONS.find(a => a.id === id)?.label || id);
+
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [conversation, setConversation] = useState([]);
@@ -213,7 +340,7 @@ function KanbanBoard() {
   const [loading, setLoading] = useState(true);
   const [socket, setSocket] = useState(null);
   const [showAddTask, setShowAddTask] = useState(false);
-  const [newTaskForm, setNewTaskForm] = useState({ description: '' });
+  const [newTaskForm, setNewTaskForm] = useState({ description: '', dod: '' });
   const [creatingTask, setCreatingTask] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterAssignee, setFilterAssignee] = useState('');
@@ -225,10 +352,12 @@ function KanbanBoard() {
   const [editMessageText, setEditMessageText] = useState('');
   const [activity, setActivity] = useState([]);
   const [activityPolling, setActivityPolling] = useState(null);
+  const [currentActor, setCurrentActor] = useState(() => localStorage.getItem('kanban_currentActor') || 'mr-a');
 
   useEffect(() => { localStorage.setItem('kanban_timeFilter', timeFilter); }, [timeFilter]);
   useEffect(() => { localStorage.setItem('kanban_dateFrom', dateFrom); }, [dateFrom]);
   useEffect(() => { localStorage.setItem('kanban_dateTo', dateTo); }, [dateTo]);
+  useEffect(() => { localStorage.setItem('kanban_currentActor', currentActor); }, [currentActor]);
 
   useEffect(() => {
     fetchTasks();
@@ -276,7 +405,7 @@ function KanbanBoard() {
     if (!newMessage.trim() || !selectedTask) return;
     try {
       await axios.post(`${API_URL}/api/tasks/${selectedTask.id}/conversation`, {
-        author: 'assi',
+        author: currentActor,
         message: newMessage
       });
       setNewMessage('');
@@ -286,17 +415,34 @@ function KanbanBoard() {
 
   const handleCreateTask = async () => {
     if (!newTaskForm.description.trim()) return;
+    
+    // Parse DoD from comma-separated values
+    const dodArray = newTaskForm.dod
+      .split(',')
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+    
+    if (dodArray.length === 0) {
+      alert('Please add at least one Definition of Done criteria');
+      return;
+    }
+    
     setCreatingTask(true);
     try {
       await axios.post(`${API_URL}/api/tasks`, {
         title: newTaskForm.description,
         status: 'Backlog',
-        created_by: 'assi'
+        assignee: 'lior',
+        created_by: currentActor,
+        dod: dodArray
       });
       setShowAddTask(false);
-      setNewTaskForm({ description: '' });
+      setNewTaskForm({ description: '', dod: '' });
       fetchTasks();
-    } catch (err) { console.error('Error creating task:', err); }
+    } catch (err) { 
+      console.error('Error creating task:', err);
+      alert(err.response?.data?.error || 'Failed to create task');
+    }
     setCreatingTask(false);
   };
 
@@ -327,8 +473,11 @@ function KanbanBoard() {
   return (
     <>
       <div style={styles.header}>
-        <h1 style={styles.title}>📋 Assi Org - Kanban Board</h1>
+        <h1 style={styles.pageTitle}>📋 True Check4</h1>
         <div style={styles.controls}>
+          <select style={styles.select} value={currentActor} onChange={e => setCurrentActor(e.target.value)}>
+            {ACTOR_OPTIONS.map(a => <option key={a.id} value={a.id}>{a.label}</option>)}
+          </select>
           <button style={styles.addBtn} onClick={() => setShowAddTask(true)}>+ Add Task</button>
         </div>
       </div>
@@ -366,11 +515,12 @@ function KanbanBoard() {
 
       <div style={styles.board}>
         {COLUMNS.map(column => {
-          const columnTasks = filterTasks.filter(t => t.status === column.id);
+          // Filter by status AND approval (Done column only shows approved tasks)
+          const columnTasks = filterTasks.filter(t => column.filterStatuses.includes(t.status));
           return (
             <div key={column.id} style={styles.column}>
               <div style={{ ...styles.columnHeader, ...column.headerStyle }}>
-                <span>{column.id}</span>
+                <span>{column.label || column.id}</span>
                 <span style={styles.taskCount}>{columnTasks.length}</span>
               </div>
               <div style={styles.taskList}>
@@ -378,12 +528,8 @@ function KanbanBoard() {
                   <div key={task.id} style={styles.task} onClick={() => handleTaskClick(task)}>
                     <div style={styles.taskTitle}>{task.title}</div>
                     <div style={styles.taskMeta}>
-                      <span style={{ ...styles.tag, ...styles.tagAssignee }}>@{task.assignee} (owner)</span>
-                      {task.contributors && task.contributors.filter(c => c !== task.assignee).length > 0 && (
-                        <span style={{ ...styles.tag, backgroundColor: '#e8f5e9', color: '#2e7d32' }}>
-                          +{task.contributors.filter(c => c !== task.assignee).length} helper{task.contributors.filter(c => c !== task.assignee).length > 1 ? 's' : ''}
-                        </span>
-                      )}
+                      <span style={{ ...styles.tag, ...styles.tagAssignee }}>@{task.assignee}</span>
+                      <span style={{ ...styles.tag, backgroundColor: '#e8f5e9', color: '#2e7d32' }}>{task.status}</span>
                       <span style={{ ...styles.tag, ...styles.tagCreator }}>{task.created_by}</span>
                     </div>
                     <div style={{ ...styles.taskMeta, marginTop: '8px', fontSize: '11px' }}>
@@ -417,6 +563,70 @@ function KanbanBoard() {
                 )}
                 <div><strong>Created:</strong> {formatTime(selectedTask.created_at)}</div>
                 <div><strong>Task ID:</strong> {selectedTask.id}</div>
+              </div>
+              
+              {/* Definition of Done (DoD) Section */}
+              {selectedTask.dod && (
+                <div style={styles.section}>
+                  <div style={{...styles.sectionTitle, color: '#28a745'}}>✅ Definition of Done</div>
+                  <div style={{ backgroundColor: '#e8f5e9', padding: '12px', borderRadius: '6px' }}>
+                    {selectedTask.dod.map((item, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '6px' }}>
+                        <span style={{ color: '#28a745', marginRight: '8px', fontSize: '14px' }}>☐</span>
+                        <span style={{ fontSize: '13px', color: '#333' }}>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Workflow Actions Section */}
+              <div style={{ ...styles.section, backgroundColor: '#e7f3ff', padding: '15px', borderRadius: '8px', border: '2px solid #007bff' }}>
+                <div style={{ ...styles.sectionTitle, color: '#007bff' }}>🎯 Workflow Actions</div>
+                <WorkflowActions task={selectedTask} currentActor={currentActor} actorLabel={actorLabel} onUpdate={async () => {
+                  await fetchTasks();
+                  await getConversation(selectedTask.id);
+                }} onClose={() => setSelectedTask(null)} />
+              </div>
+              
+              {/* Artifact Section */}
+              <div style={styles.section}>
+                <div style={{...styles.sectionTitle, color: '#6f42c1', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                  <span>📦 Artifact</span>
+                  {!selectedTask.artifactPath && (
+                    <button 
+                      style={{...styles.sendBtn, padding: '5px 10px', fontSize: '11px', backgroundColor: '#6f42c1'}}
+                      onClick={async () => {
+                        try {
+                          await axios.post(`${API_URL}/api/tasks/${selectedTask.id}/artifact`);
+                          await fetchTasks();
+                          await getConversation(selectedTask.id);
+                        } catch (err) { console.error(err); }
+                      }}
+                    >
+                      + Create Artifact
+                    </button>
+                  )}
+                </div>
+                {selectedTask.artifactPath ? (
+                  <div style={{ backgroundColor: '#f3e5f5', padding: '12px', borderRadius: '6px', border: '1px solid #6f42c1' }}>
+                    <div style={{ marginBottom: '8px', fontSize: '13px', color: '#6f42c1', fontWeight: '500' }}>
+                      📄 {selectedTask.artifactPath}
+                    </div>
+                    <a 
+                      href={`http://localhost:3001/api/tasks/${selectedTask.id}/artifact`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#007bff', textDecoration: 'underline', fontSize: '13px' }}
+                    >
+                      🔗 Open Artifact File →
+                    </a>
+                  </div>
+                ) : (
+                  <div style={{ color: '#999', fontSize: '13px', fontStyle: 'italic' }}>
+                    No artifact yet. Click "Create Artifact" to start working on the deliverable.
+                  </div>
+                )}
               </div>
               
               {/* Live Activity Section */}
@@ -455,7 +665,7 @@ function KanbanBoard() {
                     <div key={i} style={styles.message}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={styles.messageAuthor}>{msg.author}</div>
-                        {msg.author === 'assi' && (
+                        {msg.author === currentActor && (
                           <div style={{ display: 'flex', gap: '5px' }}>
                             <button 
                               style={{ ...styles.sendBtn, padding: '4px 8px', fontSize: '11px', backgroundColor: '#6c757d' }}
@@ -471,7 +681,7 @@ function KanbanBoard() {
                               onClick={async () => {
                                 if (confirm('Delete this message?')) {
                                   await axios.delete(`${API_URL}/api/tasks/${selectedTask.id}/conversation/${i}`, {
-                                    data: { author: 'assi' }
+                                    data: { author: currentActor }
                                   });
                                   await getConversation(selectedTask.id);
                                 }
@@ -494,7 +704,7 @@ function KanbanBoard() {
                               style={{ ...styles.sendBtn, padding: '4px 12px', backgroundColor: '#28a745' }}
                               onClick={async () => {
                                 await axios.patch(`${API_URL}/api/tasks/${selectedTask.id}/conversation/${i}`, {
-                                  author: 'assi',
+                                  author: currentActor,
                                   message: editMessageText
                                 });
                                 setEditingMessage(null);
@@ -548,7 +758,7 @@ function KanbanBoard() {
       {/* Add Task Modal */}
       {showAddTask && (
         <div style={styles.modal} onClick={() => setShowAddTask(false)}>
-          <div style={{ ...styles.modalContent, maxWidth: '500px' }} onClick={e => e.stopPropagation()}>
+          <div style={{ ...styles.modalContent, maxWidth: '550px' }} onClick={e => e.stopPropagation()}>
             <div style={styles.modalHeader}>
               <h2 style={styles.modalTitle}>Create New Task</h2>
               <button style={styles.closeBtn} onClick={() => setShowAddTask(false)}>×</button>
@@ -557,15 +767,26 @@ function KanbanBoard() {
               <div style={styles.section}>
                 <div style={styles.sectionTitle}>Task Description</div>
                 <textarea
-                  style={{ ...styles.input, minHeight: '100px', resize: 'vertical' }}
-                  placeholder="Describe the task (Ctrl+Enter to submit)"
+                  style={{ ...styles.input, minHeight: '80px', resize: 'vertical' }}
+                  placeholder="Describe what needs to be done"
                   value={newTaskForm.description}
                   onChange={e => setNewTaskForm({ ...newTaskForm, description: e.target.value })}
-                  onKeyPress={e => {
-                    if (e.key === 'Enter' && e.ctrlKey) handleCreateTask();
-                  }}
                 />
               </div>
+              
+              <div style={styles.section}>
+                <div style={{...styles.sectionTitle, color: '#28a745'}}>✅ Definition of Done</div>
+                <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  Add criteria that must be met for this task to be complete (comma-separated)
+                </div>
+                <textarea
+                  style={{ ...styles.input, minHeight: '80px', resize: 'vertical' }}
+                  placeholder="e.g., Code completed, Tested, No errors, Reviewed"
+                  value={newTaskForm.dod}
+                  onChange={e => setNewTaskForm({ ...newTaskForm, dod: e.target.value })}
+                />
+              </div>
+              
               <button
                 style={{ ...styles.sendBtn, width: '100%', opacity: creatingTask ? 0.7 : 1 }}
                 onClick={handleCreateTask}
@@ -595,3 +816,83 @@ export default function App() {
     </div>
   );
 }
+
+/* Batch Title 1 */
+
+/* Batch Title 2 */
+
+/* Batch Title 3 */
+
+/* Batch Title 5 */
+
+/* Batch Title 6 */
+
+/* Batch Title 9 */
+
+/* Batch Title 4 */
+
+/* Batch Title 8 */
+
+/* Batch Title 7 */
+
+/* Batch Title 10 */
+
+/* Batch Title 12 */
+
+/* Batch Title 13 */
+
+/* Batch Title 14 */
+
+/* Batch Title 11 */
+
+/* Batch Title 15 */
+
+/* Batch Title 16 */
+
+/* Batch Title 17 */
+
+/* Batch Title 19 */
+
+/* Batch Title 20 */
+
+/* Batch Title 18 */
+
+/* Recheck Title 2 */
+
+/* Recheck Title 1 */
+
+/* Recheck Title 5 */
+
+/* Recheck Title 3 */
+
+/* Recheck Title 6 */
+
+/* Recheck Title 7 */
+
+/* Recheck Title 4 */
+
+/* Recheck Title 8 */
+
+/* Recheck Title 9 */
+
+/* Recheck Title 10 */
+
+/* Recheck Title 11 */
+
+/* Recheck Title 12 */
+
+/* Recheck Title 13 */
+
+/* Recheck Title 14 */
+
+/* Recheck Title 15 */
+
+/* Recheck Title 16 */
+
+/* Recheck Title 17 */
+
+/* Recheck Title 18 */
+
+/* Recheck Title 19 */
+
+/* Recheck Title 20 */
