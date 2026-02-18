@@ -525,7 +525,7 @@ function KanbanBoard() {
   return (
     <>
       <div style={styles.header}>
-        <h1 style={styles.pageTitle}>📋 True Check4</h1>
+        <h1 style={styles.pageTitle}>📋 Activity Board</h1>
         <div style={styles.controls}>
           <select style={styles.select} value={currentActor} onChange={e => setCurrentActor(e.target.value)}>
             {ACTOR_OPTIONS.map(a => <option key={a.id} value={a.id}>{a.label}</option>)}
